@@ -428,7 +428,6 @@ def main():
     slug = queries[0].replace(" ","_")[:20]; ts = datetime.now().strftime("%Y%m%d_%H%M")
     fn_csv = args.output or f"blog_{slug}_{ts}.csv"
     fn_txt = fn_csv.rsplit(".",1)[0] + ".txt"
-    fn_json = fn_csv.rsplit(".",1)[0] + ".json"
 
     with open(fn_csv, "w", encoding="utf-8-sig", newline="") as f:
         w = csv.writer(f); w.writerow(["키워드","타이틀","본문","블로거","링크","날짜","URL"])
@@ -446,14 +445,6 @@ def main():
                   f"    글자수: {a.get('content_length',0):,}자", "-"*70, a.get("content",""), "="*70]
     Path(fn_txt).write_text("\n".join(lines)+"\n", encoding="utf-8")
     console.print(f"[green]TXT 저장: {fn_txt}[/green]")
-
-    # JSON 저장
-    with open(fn_json, "w", encoding="utf-8") as f:
-        json.dump({"query": queries, "count": len(articles),
-                    "success": sum(1 for a in articles if a.get("success")),
-                    "failed": sum(1 for a in articles if not a.get("success")),
-                    "articles": articles}, f, ensure_ascii=False, indent=2)
-    console.print(f"[dim]JSON: {fn_json}[/dim]")
 
     # 결과 출력
     ok = sum(1 for a in articles if a.get("success")); fail = len(articles) - ok
